@@ -1,0 +1,57 @@
+package com.first.first;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.io.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+class book1test {
+    private book1 contactBook;
+    @BeforeEach
+    void setUp() {
+        // Create a new instance of book1 before each test
+        contactBook = new book1();
+    }
+    @AfterEach
+    void tearDown() {
+        // Clean up contacts file after each test
+        File file = new File("contacts.txt");
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+    @Test
+    void testAddContact() {
+        contactBook.addContact("John Doe", "1234567890", "john@example.com");
+        List<Contact> contacts = contactBook.getContacts();
+        assertEquals(1, contacts.size());
+        assertEquals("John Doe", contacts.get(0).getName());
+        assertEquals("1234567890", contacts.get(0).getPhone());
+        assertEquals("john@example.com", contacts.get(0).getEmail());
+    }
+    @Test
+    void testViewContacts() {
+        contactBook.addContact("Jane Doe", "0987654321", "jane@example.com");
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+        contactBook.viewContacts();
+        String expectedOutput = "Name: Jane Doe, Phone: 0987654321, Email: jane@example.com" + System.lineSeparator();
+        assertEquals(expectedOutput, outContent.toString());
+    }
+    @Test
+    void testDeleteContact() {
+        contactBook.addContact("Mark Smith", "5555555555", "mark@example.com");
+        contactBook.deleteContact("Mark Smith");
+        List<Contact> contacts = contactBook.getContacts();
+        assertTrue(contacts.isEmpty());
+    }
+    @Test
+    void testDeleteNonExistingContact() {
+        contactBook.addContact("Alice Johnson", "4444444444", "alice@example.com");
+        contactBook.deleteContact("Non Existing");
+        
+        List<Contact> contacts = contactBook.getContacts();
+        assertEquals(1, contacts.size());
+    }
+}
